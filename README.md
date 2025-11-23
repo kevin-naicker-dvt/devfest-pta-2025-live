@@ -191,11 +191,25 @@ The application will be deployed to Google Cloud Platform using:
 - Display message from database
 - Test 3-tier architecture
 
-### Phase 2: Recruitment Application (Coming Next)
-- Job application submission form
-- Recruiter dashboard with application queue
-- Application detail view with notes
-- Status tracking for applicants
+### Phase 2: Recruitment Application (Candidate View) ✅
+- **Candidate Login** - Emulated authentication with multiple profiles
+- **Job Application Form** - Submit applications with CV upload (simulated)
+- **My Applications Dashboard** - View all submitted applications
+- **Real-time Status Updates** - Auto-refresh to see recruiter updates
+- **Position Selection** - 10 different job positions available
+- **Editable Candidates** - Create multiple candidates for testing
+
+See [RECRUITMENT-APP-GUIDE.md](RECRUITMENT-APP-GUIDE.md) for detailed usage instructions.
+
+### Phase 3: Recruiter View ✅
+- **Role Selection** - Choose between Candidate and Recruiter
+- **Application Queue** - Table view of all applications with real-time updates
+- **Edit Application Dialog** - Update status and add notes
+- **Status Management** - 5 status levels with color-coded badges
+- **Notes System** - Add feedback visible to candidates
+- **No Login Required** - Simple demo mode for recruiters
+
+See [RECRUITER-GUIDE.md](RECRUITER-GUIDE.md) for detailed usage instructions.
 
 ## 🤝 Contributing
 

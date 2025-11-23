@@ -247,3 +247,4 @@ function dcr { docker-compose restart }
 docker-compose ps && curl http://localhost:3001/api/health && curl http://localhost:3000
 ```
 
+

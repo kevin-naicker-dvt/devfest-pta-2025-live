@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Container,
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CircularProgress,
-  Alert,
   ThemeProvider,
   createTheme,
   CssBaseline,
+  Box,
 } from '@mui/material';
-import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import RoleSelection from './components/RoleSelection';
+import CandidateLogin from './components/CandidateLogin';
+import ApplicationForm from './components/ApplicationForm';
+import MyApplications from './components/MyApplications';
+import ApplicationQueue from './components/ApplicationQueue';
+import { CandidateProfile, UserRole } from './types';
 
 const theme = createTheme({
   palette: {
@@ -24,98 +25,92 @@ const theme = createTheme({
   },
 });
 
-interface HelloWorldData {
-  id: number;
-  message: string;
-  created_at: string;
-}
-
 function App() {
-  const [message, setMessage] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [role, setRole] = useState<UserRole | null>(() => {
+    const saved = localStorage.getItem('userRole');
+    return saved as UserRole | null;
+  });
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  const [candidate, setCandidate] = useState<CandidateProfile | null>(() => {
+    const saved = localStorage.getItem('candidate');
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  useEffect(() => {
-    const fetchHelloWorld = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get<HelloWorldData>(`${API_URL}/api/hello`);
-        setMessage(response.data.message);
-        setError('');
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to connect to the backend. Make sure the API is running.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleSelectRole = (selectedRole: UserRole) => {
+    setRole(selectedRole);
+    localStorage.setItem('userRole', selectedRole);
+  };
 
-    fetchHelloWorld();
-  }, [API_URL]);
+  const handleCandidateLogin = (profile: CandidateProfile) => {
+    setCandidate(profile);
+    localStorage.setItem('candidate', JSON.stringify(profile));
+  };
 
+  const handleLogout = () => {
+    setRole(null);
+    setCandidate(null);
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('candidate');
+  };
+
+  // No role selected - show role selection
+  if (!role) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RoleSelection onSelectRole={handleSelectRole} />
+      </ThemeProvider>
+    );
+  }
+
+  // Candidate role but not logged in
+  if (role === 'candidate' && !candidate) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <CandidateLogin onLogin={handleCandidateLogin} />
+      </ThemeProvider>
+    );
+  }
+
+  // Candidate role and logged in
+  if (role === 'candidate' && candidate) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+            <Navigation
+              role="candidate"
+              candidateName={candidate.candidateName}
+              onLogout={handleLogout}
+            />
+            <Routes>
+              <Route path="/" element={<Navigate to="/apply" replace />} />
+              <Route path="/apply" element={<ApplicationForm candidate={candidate} />} />
+              <Route path="/my-applications" element={<MyApplications candidate={candidate} />} />
+              <Route path="*" element={<Navigate to="/apply" replace />} />
+            </Routes>
+          </Box>
+        </Router>
+      </ThemeProvider>
+    );
+  }
+
+  // Recruiter role
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="md">
-        <Box
-          sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            py: 4,
-          }}
-        >
-          <Typography
-            variant="h2"
-            component="h1"
-            gutterBottom
-            sx={{ fontWeight: 'bold', color: 'primary.main' }}
-          >
-            DevFest PTA 2025
-          </Typography>
-          
-          <Typography
-            variant="h5"
-            component="h2"
-            gutterBottom
-            sx={{ color: 'text.secondary', mb: 4 }}
-          >
-            Google Cloud Platform Demo
-          </Typography>
-
-          <Card sx={{ minWidth: 400, boxShadow: 3 }}>
-            <CardContent>
-              {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                  <CircularProgress />
-                </Box>
-              ) : error ? (
-                <Alert severity="error">{error}</Alert>
-              ) : (
-                <Box sx={{ textAlign: 'center', p: 2 }}>
-                  <Typography variant="h4" component="div" sx={{ mb: 2 }}>
-                    {message}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Message retrieved from PostgreSQL database
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-
-          <Typography
-            variant="caption"
-            sx={{ mt: 4, color: 'text.secondary' }}
-          >
-            3-Tier Architecture: React + NestJS + PostgreSQL
-          </Typography>
+      <Router>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+          <Navigation role="recruiter" onLogout={handleLogout} />
+          <Routes>
+            <Route path="/" element={<Navigate to="/queue" replace />} />
+            <Route path="/queue" element={<ApplicationQueue />} />
+            <Route path="*" element={<Navigate to="/queue" replace />} />
+          </Routes>
         </Box>
-      </Container>
+      </Router>
     </ThemeProvider>
   );
 }

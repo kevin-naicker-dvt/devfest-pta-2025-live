@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ApplicationsController } from './applications.controller';
+import { ApplicationsService } from './applications.service';
 import { HelloWorld } from './entities/hello-world.entity';
+import { Application } from './entities/application.entity';
 
 @Module({
   imports: [
@@ -13,14 +16,14 @@ import { HelloWorld } from './entities/hello-world.entity';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'DevF3st123-pluto-is-plan3t',
       database: process.env.DB_DATABASE || 'devfest_db',
-      entities: [HelloWorld],
+      entities: [HelloWorld, Application],
       synchronize: false, // Don't auto-sync in production
       logging: true,
     }),
-    TypeOrmModule.forFeature([HelloWorld]),
+    TypeOrmModule.forFeature([HelloWorld, Application]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ApplicationsController],
+  providers: [AppService, ApplicationsService],
 })
 export class AppModule {}
 
