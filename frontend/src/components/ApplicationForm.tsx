@@ -188,3 +188,4 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ candidate }) => {
 export default ApplicationForm;
 
 
+

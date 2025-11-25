@@ -174,3 +174,4 @@ const CandidateLogin: React.FC<CandidateLoginProps> = ({ onLogin }) => {
 export default CandidateLogin;
 
 
+

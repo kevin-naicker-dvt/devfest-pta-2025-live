@@ -187,3 +187,4 @@ const MyApplications: React.FC<MyApplicationsProps> = ({ candidate }) => {
 export default MyApplications;
 
 
+

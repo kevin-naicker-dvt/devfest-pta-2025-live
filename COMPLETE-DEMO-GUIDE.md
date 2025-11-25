@@ -406,3 +406,4 @@ docker-compose exec database psql -U postgres -d devfest_db -c "SELECT * FROM ap
 **Wow Factor**: Real-time updates visible across roles! 🚀
 
 
+
